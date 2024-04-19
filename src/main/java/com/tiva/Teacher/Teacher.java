@@ -13,4 +13,24 @@ public class Teacher {
         this.lastName = lastName;
         this.email = email;
     }
+
+    public String getRegNumber() {
+        return regNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFullName() {
+        return lastName + " " + firstName;
+    }
 }
