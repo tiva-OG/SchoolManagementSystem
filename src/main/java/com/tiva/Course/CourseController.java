@@ -4,14 +4,14 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Scanner;
 
-public class CourseRegistration {
+public class CourseController {
     private Connection connection;
     private Scanner scanner;
 
     private Course course;
     private CourseQuery courseQuery;
 
-    public CourseRegistration(Connection connection, Scanner scanner) {
+    public CourseController(Connection connection, Scanner scanner) {
         this.connection = connection;
         this.scanner = scanner;
         this.courseQuery = new CourseQuery(connection);
