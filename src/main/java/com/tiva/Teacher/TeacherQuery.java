@@ -14,6 +14,20 @@ public class TeacherQuery {
         this.tableName = "teachers";
     }
 
+    public ResultSet getTeacher(Teacher teacher) {
+        try {
+            String query = "SELECT * FROM %s WHERE reg_number=?";
+            query = String.format(query, tableName);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, teacher.getRegNumber());
+            return preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void addTeacher(Teacher teacher) {
         try {
             String query = "INSERT INTO %s(reg_number, full_name, email) VALUES (?, ?, ?)";
@@ -35,17 +49,21 @@ public class TeacherQuery {
         }
     }
 
-    public ResultSet getTeacher(Teacher teacher) {
+    public void removeTeacher(Teacher teacher) {
         try {
-            String query = "SELECT * FROM %s WHERE reg_number=?";
+            String query = "DELETE FROM %s WHERE reg_number=?";
             query = String.format(query, tableName);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, teacher.getRegNumber());
-            return preparedStatement.executeQuery();
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Teacher removed from database.");
+            } else {
+                System.out.println("Failed to remove Teacher from database.");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

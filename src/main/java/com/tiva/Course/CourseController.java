@@ -1,39 +1,53 @@
 package com.tiva.Course;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class CourseController {
-    private Connection connection;
-    private Scanner scanner;
+    private final Scanner scanner;
 
     private Course course;
-    private CourseQuery courseQuery;
+    private final CourseQuery courseQuery;
 
     public CourseController(Connection connection, Scanner scanner) {
-        this.connection = connection;
         this.scanner = scanner;
         this.courseQuery = new CourseQuery(connection);
     }
 
-    private List requestCourseDetails() {
-        String courseCode;
-        String courseTitle;
-        int courseLevel;
-        int creditUnits;
-
+    protected List requestCourseDetails() {
         System.out.print("Enter the course code: ");
-        courseCode = scanner.next();
+        String courseCode = scanner.next();
         System.out.print("Enter the course title: ");
-        courseTitle = scanner.next();
+        String courseTitle = scanner.next();
         System.out.print("Enter the course level: ");
-        courseLevel = scanner.nextInt();
+        int courseLevel = scanner.nextInt();
         System.out.print("Enter the course credit-units: ");
-        creditUnits = scanner.nextInt();
+        int creditUnits = scanner.nextInt();
 
         Object[] courseDetails = new Object[]{courseCode, courseTitle, courseLevel, creditUnits};
         return List.of(courseDetails);
+    }
+
+    public String requestCourseCode() {
+        System.out.print("Enter the course code: ");
+        String courseCode = scanner.next();
+
+        return courseCode;
+    }
+
+    public boolean isCourse(String courseCode) {
+        try {
+            course = new Course(courseCode);
+            ResultSet resultSet = courseQuery.getCourse(course);
+            return resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public void registerCourse() {
@@ -45,5 +59,15 @@ public class CourseController {
 
         course = new Course(courseCode, courseTitle, courseLevel, creditUnits);
         courseQuery.addCourse(course);
+    }
+
+    public void deleteCourse() {
+        String courseCode = requestCourseCode();
+        course = new Course(courseCode);
+        if (isCourse(course.getCourseCode())) {
+            courseQuery.removeCourse(course);
+        } else {
+            System.out.println("Course data does not exist.");
+        }
     }
 }

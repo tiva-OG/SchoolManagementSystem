@@ -3,8 +3,8 @@ package com.tiva.Student;
 public class Student {
 
     private final String regNumber;
-    private final String firstName;
-    private final String lastName;
+    private String firstName;
+    private String lastName;
     private String email;
     private int level;
     private int maxCreditUnits;
@@ -21,6 +21,10 @@ public class Student {
         this.maxCreditUnits = maxCreditUnits;
         this.minCreditUnits = 28;
         this.registeredCreditUnits = 0;
+    }
+
+    public Student(String regNumber) {
+        this.regNumber = regNumber;
     }
 
     public String getRegNumber() {
@@ -57,5 +61,9 @@ public class Student {
 
     public String getFullName() {
         return lastName + " " + firstName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

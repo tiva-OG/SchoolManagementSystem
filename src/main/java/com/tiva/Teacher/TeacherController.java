@@ -1,6 +1,8 @@
 package com.tiva.Teacher;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,6 +24,13 @@ public class TeacherController {
         return null;
     }
 
+    protected String requestRegNumber() {
+        System.out.print("Enter teacher's registration-number: ");
+        String regNumber = scanner.next();
+
+        return regNumber;
+    }
+
     protected List requestTeacherDetails() {
         String regNumber;
         String firstName;
@@ -40,7 +49,19 @@ public class TeacherController {
         return List.of(teacherDetails);
     }
 
-    private void registerStudent() {
+    protected boolean isTeacher(String regNumber) {
+        try {
+            teacher = new Teacher(regNumber);
+            ResultSet resultSet = teacherQuery.getTeacher(teacher);
+            return resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private void registerTeacher() {
         List teacherDetails = requestTeacherDetails();
         String regNumber = (String) teacherDetails.get(0);
         String firstName = (String) teacherDetails.get(1);
@@ -49,5 +70,15 @@ public class TeacherController {
 
         teacher = new Teacher(regNumber, firstName, lastName, email);
         teacherQuery.addTeacher(teacher);
+    }
+
+    private void deleteTeacher() {
+        String regNumber = requestRegNumber();
+        teacher = new Teacher(regNumber);
+        if (isTeacher(teacher.getRegNumber())) {
+            teacherQuery.removeTeacher(teacher);
+        } else {
+            System.out.println("Teacher data does not exist.");
+        }
     }
 }

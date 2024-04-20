@@ -14,6 +14,20 @@ public class CourseQuery {
         this.tableName = "courses";
     }
 
+    public ResultSet getCourse(Course course) {
+        try {
+            String query = "SELECT * FROM %s WHERE course_code=?;";
+            query = String.format(query, tableName);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, course.getCourseCode());
+            return preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void addCourse(Course course) {
         try {
             String query = "INSERT INTO %s(code, title, level, credit_units) VALUES (?, ?, ?, ?)";
@@ -27,7 +41,7 @@ public class CourseQuery {
             if (affectedRows > 0) {
                 System.out.println("Course added to database.");
             } else {
-                System.out.println("Course removed from database.");
+                System.out.println("Failed to add Course to database.");
             }
 
         } catch (SQLException e) {
@@ -35,17 +49,21 @@ public class CourseQuery {
         }
     }
 
-    public ResultSet getCourse(Course course) {
+    public void removeCourse(Course course) {
         try {
-            String query = "SELECT * FROM %s WHERE course_code=?";
+            String query = "DELETE FROM %s WHERE course_code=?";
             query = String.format(query, tableName);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, course.getCourseCode());
-            return preparedStatement.executeQuery();
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Course removed from database.");
+            } else {
+                System.out.println("Failed to remove Course from database.");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

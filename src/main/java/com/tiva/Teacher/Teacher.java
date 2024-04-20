@@ -14,6 +14,10 @@ public class Teacher {
         this.email = email;
     }
 
+    public Teacher(String regNumber) {
+        this.regNumber = regNumber;
+    }
+
     public String getRegNumber() {
         return regNumber;
     }
