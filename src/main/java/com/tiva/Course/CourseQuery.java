@@ -16,7 +16,7 @@ public class CourseQuery {
 
     public ResultSet getCourse(Course course) {
         try {
-            String query = "SELECT * FROM %s WHERE course_code=?;";
+            String query = "SELECT * FROM %s WHERE code=upper(?);";
             query = String.format(query, tableName);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, course.getCourseCode());

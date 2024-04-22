@@ -12,8 +12,9 @@ public class CourseController {
     private Course course;
     private final CourseQuery courseQuery;
 
-    public CourseController(Connection connection, Scanner scanner) {
-        this.scanner = scanner;
+    public CourseController(Connection connection) {
+        this.scanner = new Scanner(System.in);
+        this.scanner.useDelimiter("\n");
         this.courseQuery = new CourseQuery(connection);
     }
 
@@ -50,6 +51,17 @@ public class CourseController {
         return false;
     }
 
+    public int getCreditUnits(String courseCode) throws SQLException {
+        course = new Course(courseCode);
+        ResultSet resultSet = courseQuery.getCourse(course);
+        int creditUnits = 0;
+        while (resultSet.next()) {
+            creditUnits = resultSet.getInt("credit_units");
+        }
+
+        return creditUnits;
+    }
+
     public void registerCourse() {
         List courseDetails = requestCourseDetails();
         String courseCode = (String) courseDetails.get(0);
@@ -68,6 +80,24 @@ public class CourseController {
             courseQuery.removeCourse(course);
         } else {
             System.out.println("Course data does not exist.");
+        }
+    }
+
+    public void displayCourse(String courseCode) throws SQLException {
+        course = new Course(courseCode);
+        ResultSet resultSet = courseQuery.getCourse(course);
+        while (resultSet.next()) {
+            String courseTitle = resultSet.getString("title");
+            int level = resultSet.getInt("level");
+            int creditUnits = resultSet.getInt("credit_units");
+
+            System.out.println();
+            System.out.println("+-------------++----------------------------------++----------++-----+");
+            System.out.println("| COURSE CODE || COURSE TITLE                     || LEVEL    || CU  |");
+            System.out.println("+-------------++----------------------------------++----------++-----+");
+            System.out.printf("| %-11s || %-32s || %-8s || %-3s |\n", courseCode, courseTitle, level, creditUnits);
+            System.out.println("+-------------++----------------------------------++----------++-----+");
+            System.out.println();
         }
     }
 }

@@ -27,6 +27,22 @@ public class Student {
         this.regNumber = regNumber;
     }
 
+    public void setParams(String firstName, String lastName, String email, int level, int registeredCreditUnits) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.level = level;
+        this.registeredCreditUnits = registeredCreditUnits;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public String getRegNumber() {
         return regNumber;
     }
@@ -60,10 +76,17 @@ public class Student {
     }
 
     public String getFullName() {
-        return lastName + " " + firstName;
+        return firstName + " " + lastName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public String toString() {
+        return "Student{" +
+                "regNumber='" + regNumber + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", level=" + level +
+                '}';
     }
 }

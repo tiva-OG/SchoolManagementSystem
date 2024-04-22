@@ -1,5 +1,7 @@
 package com.tiva.Teacher;
 
+import com.tiva.Student.Student;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,12 +32,13 @@ public class TeacherQuery {
 
     public void addTeacher(Teacher teacher) {
         try {
-            String query = "INSERT INTO %s(reg_number, full_name, email) VALUES (?, ?, ?)";
+            String query = "INSERT INTO %s(reg_number, full_name, email, course_in_charge) VALUES (?, ?, ?, ?)";
             query = String.format(query, tableName);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, teacher.getRegNumber());
             preparedStatement.setString(2, teacher.getFullName());
             preparedStatement.setString(3, teacher.getEmail());
+            preparedStatement.setString(4, teacher.getCourseInCharge());
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows > 0) {
@@ -65,5 +68,19 @@ public class TeacherQuery {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateEmail(Teacher teacher) throws SQLException {
+            String query = "UPDATE %s SET email=? WHERE reg_number=?;";
+            query = String.format(query, tableName);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, teacher.getEmail());
+            preparedStatement.setString(2, teacher.getRegNumber());
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Teacher email has been changed.");
+            } else {
+                System.out.println("Unable to change Teacher email.");
+            }
     }
 }
