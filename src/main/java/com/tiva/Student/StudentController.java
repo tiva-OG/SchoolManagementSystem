@@ -4,25 +4,23 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class StudentController {
-    private final Connection connection;
     private final Scanner scanner;
 
     private Student student;
     private final StudentQuery studentQuery;
 
 
-    public StudentController(Connection connection) throws SQLException {
-        this.connection = connection;
+    public StudentController(Connection connection) {
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
         this.studentQuery = new StudentQuery(connection);
     }
 
-    public StudentController(Connection connection, String regNumber) throws SQLException {
-        this.connection = connection;
+    public StudentController(Connection connection, String regNumber) {
         this.studentQuery = new StudentQuery(connection);
         this.student = new Student(regNumber);
         this.scanner = new Scanner(System.in);
@@ -36,13 +34,13 @@ public class StudentController {
     }
 
     protected String generateRegNumber() {
-        return null;
-    }
+        Random random = new Random();
+        String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String regNumber = abc.charAt(random.nextInt(abc.length())) + String.valueOf(random.nextInt(0, 9)) + "/"
+                + random.nextInt(0, 9) + random.nextInt(0, 9) + "/"
+                + abc.charAt(random.nextInt(abc.length())) + random.nextInt(0, 9) + random.nextInt(0, 9);
 
-    protected boolean isStudent(String regNumber) throws SQLException {
-        // student = new Student(regNumber);
-        ResultSet resultSet = studentQuery.getStudent(student);
-        return resultSet.next();
+        return regNumber;
     }
 
     public Student getStudent() {
@@ -50,25 +48,18 @@ public class StudentController {
     }
 
     public int getMaxCreditUnits() {
-        int level = student.getLevel();
+        return getMaxCreditUnits(student.getLevel());
+    }
+
+    protected int getMaxCreditUnits(int level) {
         int maxCreditUnits = 0;
 
         switch (level) {
-            case 100 -> {
-                maxCreditUnits = 20;
-            }
-            case 200 -> {
-                maxCreditUnits = 24;
-            }
-            case 300 -> {
-                maxCreditUnits = 28;
-            }
-            case 400 -> {
-                maxCreditUnits = 22;
-            }
-            case 500 -> {
-                maxCreditUnits = 26;
-            }
+            case 100 -> maxCreditUnits = 20;
+            case 200 -> maxCreditUnits = 24;
+            case 300 -> maxCreditUnits = 28;
+            case 400 -> maxCreditUnits = 22;
+            case 500 -> maxCreditUnits = 26;
         }
 
         return maxCreditUnits;
@@ -79,13 +70,6 @@ public class StudentController {
         String regNumber = scanner.next();
 
         return regNumber;
-    }
-
-    protected String requestNewEmail() {
-        System.out.print("Enter the new email: ");
-        String newEmail = scanner.next();
-
-        return newEmail;
     }
 
     protected List requestStudentDetails() {
@@ -110,19 +94,27 @@ public class StudentController {
     }
 
     public boolean isStudent() throws SQLException {
-        // student = new Student(regNumber);
         ResultSet resultSet = studentQuery.getStudent(student);
         return resultSet.next();
     }
 
-    private void registerStudent() throws SQLException {
+    // this function may be not be so necessary as
+    // this has been handled from the beginning on the
+    // user portal at `School`
+    protected boolean isStudent(String regNumber) throws SQLException {
+        student = new Student(regNumber);
+        ResultSet resultSet = studentQuery.getStudent(student);
+        return resultSet.next();
+    }
+
+    public void registerStudent() throws SQLException {
         List studentDetails = requestStudentDetails();
         String regNumber = (String) studentDetails.get(0);
         String firstName = (String) studentDetails.get(1);
         String lastName = (String) studentDetails.get(2);
         String email = (String) studentDetails.get(3);
         int level = (int) studentDetails.get(4);
-        int maxCreditUnits = getMaxCreditUnits();
+        int maxCreditUnits = getMaxCreditUnits(level);
 
         // to handle the exception to a student that already exists,
         // use the fullName and email instead of regNumber since this
@@ -131,6 +123,7 @@ public class StudentController {
             System.out.println("Student data already exists.");
         } else {
             student = new Student(regNumber, firstName, lastName, email, level, maxCreditUnits);
+            System.out.println(student.toString());
             studentQuery.addStudent(student);
         }
     }
@@ -153,10 +146,11 @@ public class StudentController {
         studentQuery.updateLevel(student);
     }
 
-    private void deleteStudent() throws SQLException {
+    public void deleteStudent() throws SQLException {
         String regNumber = requestRegNumber();
         student = new Student(regNumber);
-        if (isStudent(student.getRegNumber())) {
+
+        if (isStudent(regNumber)) {
             studentQuery.removeStudent(student);
         } else {
             System.out.println("Student data does not exist.");
@@ -183,33 +177,24 @@ public class StudentController {
         System.out.println("3. GO BACK");
     }
 
-    public void displayProfile() {
-        try {
-            // String regNumber = requestRegNumber();
-            // student = new Student(regNumber);
-            if (isStudent(student.getRegNumber())) {
-                ResultSet resultSet = studentQuery.getStudent(student);
-                while (resultSet.next()) {
-                    String regNumber = resultSet.getString("reg_number");
-                    String fullName = resultSet.getString("full_name");
-                    String email = resultSet.getString("email");
-                    int level = resultSet.getInt("level");
-                    int regCreditUnits = resultSet.getInt("reg_credit_units");
+    public void displayProfile() throws SQLException {
+        ResultSet resultSet = studentQuery.getStudent(student);
+        while (resultSet.next()) {
+            String regNumber = resultSet.getString("reg_number");
+            String fullName = resultSet.getString("full_name");
+            String email = resultSet.getString("email");
+            int level = resultSet.getInt("level");
+            int regCreditUnits = resultSet.getInt("reg_credit_units");
 
-                    System.out.println();
-                    System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
-                    System.out.println("| ID         || NAME                 || EMAIL                                    || LEVEL      || CU         |");
-                    System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
-                    System.out.printf("| %-10s || %-20s || %-40s || %-10s || %-10s |\n", regNumber, fullName, email, level, regCreditUnits);
-                    System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
-                    System.out.println();
-                }
-            } else {
-                System.out.println("Student data does not exist.");
-            }
+            System.out.println();
+            System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
+            System.out.println("| ID         || NAME                 || EMAIL                                    || LEVEL      || CU         |");
+            System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
+            System.out.printf("| %-10s || %-20s || %-40s || %-10s || %-10s |\n", regNumber, fullName, email, level, regCreditUnits);
+            System.out.println("+------------++----------------------++------------------------------------------++------------++------------+");
+            System.out.println();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -226,5 +211,10 @@ public class StudentController {
             String lastName = (String) names.get(1);
             student.setParams(firstName, lastName, email, level, registeredCreditUnits);
         }
+    }
+
+    public void updateRegisteredCreditUnits(int creditUnits) throws SQLException {
+        student.setRegisteredCreditUnits(creditUnits);
+        studentQuery.updateRegisteredCreditUnits(student);
     }
 }

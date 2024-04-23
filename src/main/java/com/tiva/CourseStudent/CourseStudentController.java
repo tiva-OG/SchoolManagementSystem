@@ -55,6 +55,10 @@ public class CourseStudentController {
         if (courseController.isCourse(courseCode)) {
             course = new Course(courseCode);
             courseStudentQuery.registerForCourse(student, course);
+            System.out.println("Current registered credit-units: " + registeredCreditUnits);
+            System.out.println("Course credit-units: " + creditUnits);
+            System.out.println("New registered credit-units: " + (registeredCreditUnits+creditUnits));
+            studentController.updateRegisteredCreditUnits(registeredCreditUnits + creditUnits);
         } else if (!courseCode.equals("q")) {
             System.out.println("Course data does not exist.");
         }

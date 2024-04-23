@@ -83,4 +83,18 @@ public class TeacherQuery {
                 System.out.println("Unable to change Teacher email.");
             }
     }
+
+    public void updateCourseInCharge(Teacher teacher) throws SQLException {
+        String query = "UPDATE %s SET course_in_charge=? WHERE reg_number=?;";
+        query = String.format(query, tableName);
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, teacher.getCourseInCharge());
+        preparedStatement.setString(2, teacher.getRegNumber());
+        int affectedRows = preparedStatement.executeUpdate();
+        if (affectedRows > 0) {
+            System.out.println("Teacher course in-charge has been changed.");
+        } else {
+            System.out.println("Unable to change Teacher course in-charge.");
+        }
+    }
 }

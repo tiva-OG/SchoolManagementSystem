@@ -7,6 +7,7 @@ import com.tiva.Teacher.TeacherController;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -21,9 +22,9 @@ public class Main {
         String password = "210598";
         Connection connection = DriverManager.getConnection(url, username, password);
 
-        SchoolController schoolController = new SchoolController(connection);
+         SchoolController schoolController = new SchoolController(connection);
 
-        schoolController.loginPortal();
+         schoolController.adminPortal();
 
         /*
         String url = "jdbc:postgresql://localhost:5432/test";

@@ -48,10 +48,21 @@ public class Teacher {
         this.email = email;
     }
 
+    public void setCourseInCharge(String courseInCharge) {
+        this.courseInCharge = courseInCharge;
+    }
+
     public void setParams(String firstName, String lastName, String email, String courseInCharge) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.courseInCharge = courseInCharge;
+    }
+
+    @Override
+    public String toString() {
+        return "WELCOME " + lastName + " " + firstName +
+                "; YOUR REG. NUMBER: <<< " + regNumber +
+                " >>>; COURSE-IN-CHARGE: <<< " + courseInCharge + " >>>";
     }
 }

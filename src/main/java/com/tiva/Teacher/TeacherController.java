@@ -6,24 +6,23 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TeacherController {
-    private final Connection connection;
     private final Scanner scanner;
 
     private Teacher teacher;
     private final TeacherQuery teacherQuery;
 
 
-    public TeacherController(Connection connection, Scanner scanner) {
-        this.connection = connection;
-        this.scanner = scanner;
+    public TeacherController(Connection connection) {
         this.teacherQuery = new TeacherQuery(connection);
+        this.scanner = new Scanner(System.in);
+        this.scanner.useDelimiter("\n");
     }
 
-    public TeacherController(Connection connection, String regNumber) throws SQLException {
-        this.connection = connection;
+    public TeacherController(Connection connection, String regNumber) {
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
         this.teacherQuery = new TeacherQuery(connection);
@@ -36,7 +35,11 @@ public class TeacherController {
     }
 
     protected String generateRegNumber() {
-        return null;
+        Random random = new Random();
+        String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String regNumber = abc.charAt(random.nextInt(abc.length())) + random.nextInt(0, 9) + "/S" + random.nextInt(11, 99);
+
+        return regNumber;
     }
 
     protected String requestRegNumber() {
@@ -45,7 +48,6 @@ public class TeacherController {
 
         return regNumber;
     }
-
 
 
     protected List requestTeacherDetails() {
@@ -57,7 +59,7 @@ public class TeacherController {
         String lastName = scanner.next();
         System.out.print("Enter teacher's email: ");
         String email = scanner.next();
-        System.out.println("Enter teacher's course-in-charge:");
+        System.out.print("Enter teacher's course-in-charge:");
         String courseInCharge = scanner.next();
 
         Object[] teacherDetails = new Object[]{regNumber, firstName, lastName, email, courseInCharge};
@@ -65,7 +67,7 @@ public class TeacherController {
     }
 
     protected boolean isTeacher(String regNumber) throws SQLException {
-        // teacher = new Teacher(regNumber);
+        teacher = new Teacher(regNumber);
         ResultSet resultSet = teacherQuery.getTeacher(teacher);
         return resultSet.next();
     }
@@ -75,7 +77,7 @@ public class TeacherController {
         return resultSet.next();
     }
 
-    private void registerTeacher() {
+    public void registerTeacher() throws SQLException {
         List teacherDetails = requestTeacherDetails();
         String regNumber = (String) teacherDetails.get(0);
         String firstName = (String) teacherDetails.get(1);
@@ -83,14 +85,20 @@ public class TeacherController {
         String email = (String) teacherDetails.get(3);
         String courseInCharge = (String) teacherDetails.get(4);
 
-        teacher = new Teacher(regNumber, firstName, lastName, email, courseInCharge);
-        teacherQuery.addTeacher(teacher);
+        if (isTeacher(regNumber)) {
+            System.out.println("Teacher data already exists.");
+        } else {
+            teacher = new Teacher(regNumber, firstName, lastName, email, courseInCharge);
+            System.out.println(teacher.toString());
+            teacherQuery.addTeacher(teacher);
+        }
     }
 
-    private void deleteTeacher() throws SQLException {
+    public void deleteTeacher() throws SQLException {
         String regNumber = requestRegNumber();
         teacher = new Teacher(regNumber);
-        if (isTeacher(teacher.getRegNumber())) {
+
+        if (isTeacher(regNumber)) {
             teacherQuery.removeTeacher(teacher);
         } else {
             System.out.println("Teacher data does not exist.");
@@ -160,6 +168,14 @@ public class TeacherController {
 
         teacher.setEmail(newEmail);
         teacherQuery.updateEmail(teacher);
+    }
+
+    public void changeCourseInCharge() throws SQLException {
+        System.out.print("Enter new course-code for teacher: ");
+        String newCourseInCharge = scanner.next();
+
+        teacher.setCourseInCharge(newCourseInCharge);
+        teacherQuery.updateCourseInCharge(teacher);
     }
 
     public String getCourseInCharge() {

@@ -1,5 +1,6 @@
 package com.tiva.School;
 
+import com.tiva.Admin.AdminController;
 import com.tiva.Course.CourseController;
 import com.tiva.CourseStudent.CourseStudentController;
 import com.tiva.Student.StudentController;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class SchoolController {
 
-    private Connection connection;
+    private final Connection connection;
     private final Scanner scanner;
 
     public SchoolController(Connection connection) {
@@ -21,7 +22,49 @@ public class SchoolController {
         this.scanner.useDelimiter("\n");
     }
 
-    public void loginPortal() throws SQLException {
+    public void adminPortal() throws SQLException {
+        AdminController adminController = new AdminController(connection);
+
+        String username = adminController.requestUsername();
+        String password = adminController.requestPassword();
+        String adminUsername = adminController.getAdminUsername();
+        String adminPassword = adminController.getAdminPassword();
+
+        if (adminUsername.equals(username) && adminPassword.equals(password)) {
+            boolean stayLogged = true;
+
+            while (stayLogged) {
+                System.out.println();
+                adminController.displayDashboard();
+                System.out.print("Enter your choice: ");
+                int choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1 -> // register a new teacher
+                            adminController.registerTeacher();
+                    case 2 -> // register a new student
+                            adminController.registerStudent();
+                    case 3 -> // register a new course
+                            adminController.registerCourse();
+                    case 4 -> // delete teacher
+                            adminController.deleteTeacher();
+                    case 5 -> // delete student
+                            adminController.deleteStudent();
+                    case 6 -> // delete course
+                            adminController.deleteCourse();
+                    case 7 -> // change teacher's course in-charge
+                            adminController.changeTeacherCourseInCharge();
+                    case 8 -> // exit the system
+                            stayLogged = false;
+                    default -> System.out.println("Please enter a valid choice.");
+                }
+            }
+        } else {
+            System.out.println("INVALID CREDENTIALS");
+        }
+    }
+
+    public void userPortal() throws SQLException {
         String regNumber = requestUserRegNumber();
         UserType userType = getUserType(regNumber);
 
@@ -60,10 +103,28 @@ public class SchoolController {
                         studentController.displayProfile();
                     }
                     case 2 -> {
+                        // edit student profile
+                        boolean keepEditing = true;
+
+                        while (keepEditing) {
+                            System.out.println();
+                            studentController.displayEditOptions();
+                            System.out.print("Enter a choice for edit: ");
+                            int editChoice = scanner.nextInt();
+
+                            switch (editChoice) {
+                                case 1 -> studentController.changeEmail();
+                                case 2 -> studentController.changeLevel();
+                                case 3 -> keepEditing = false;
+                                default -> System.out.println("Please enter a valid choice.");
+                            }
+                        }
+                    }
+                    case 3 -> {
                         // display courses registered by student
                         courseStudentController.displayRegisteredCourses();
                     }
-                    case 3 -> {
+                    case 4 -> {
                         // student register for new course
                         String courseCode;
                         do {
@@ -72,7 +133,7 @@ public class SchoolController {
                             courseStudentController.registerForCourse(courseCode);
                         } while (!courseCode.equals("q"));
                     }
-                    case 4 -> {
+                    case 5 -> {
                         // exit the system
                         stayLoggedIn = false;
                     }
@@ -115,8 +176,8 @@ public class SchoolController {
                             int editChoice = scanner.nextInt();
 
                             switch (editChoice) {
-                                case 1-> teacherController.changeEmail();
-                                case 2-> keepEditing = false;
+                                case 1 -> teacherController.changeEmail();
+                                case 2 -> keepEditing = false;
                                 default -> System.out.println("Please enter a valid choice.");
                             }
                         }

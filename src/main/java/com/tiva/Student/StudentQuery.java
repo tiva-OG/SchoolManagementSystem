@@ -64,7 +64,7 @@ public class StudentQuery {
     }
 
     public void updateEmail(Student student) throws SQLException {
-        String query = "UPDATE TABLE %s SET email=? WHERE reg_number=?;";
+        String query = "UPDATE %s SET email=? WHERE reg_number=?;";
         query = String.format(query, tableName);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, student.getEmail());
@@ -78,7 +78,7 @@ public class StudentQuery {
     }
 
     public void updateLevel(Student student) throws SQLException {
-        String query = "UPDATE TABLE %s SET level=? WHERE reg_number=?;";
+        String query = "UPDATE %s SET level=? WHERE reg_number=?;";
         query = String.format(query, tableName);
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setInt(1, student.getLevel());
@@ -89,5 +89,14 @@ public class StudentQuery {
         } else {
             System.out.println("Unable to update Student level.");
         }
+    }
+
+    public void updateRegisteredCreditUnits(Student student) throws SQLException {
+        String query = "UPDATE %s SET reg_credit_units=? WHERE reg_number=?;";
+        query = String.format(query, tableName);
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, student.getRegisteredCreditUnits());
+        preparedStatement.setString(2, student.getRegNumber());
+        preparedStatement.executeUpdate();
     }
 }

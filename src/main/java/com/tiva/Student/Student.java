@@ -43,6 +43,10 @@ public class Student {
         this.level = level;
     }
 
+    public void setRegisteredCreditUnits(int registeredCreditUnits) {
+        this.registeredCreditUnits = registeredCreditUnits;
+    }
+
     public String getRegNumber() {
         return regNumber;
     }
@@ -81,12 +85,8 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
-                "regNumber='" + regNumber + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", level=" + level +
-                '}';
+        return "WELCOME " + lastName + " " + firstName +
+                " TO " + level + "L" +
+                "; YOUR REG. NUMBER: <<< " + regNumber + " >>>";
     }
 }

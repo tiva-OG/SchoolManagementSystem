@@ -39,16 +39,10 @@ public class CourseController {
         return courseCode;
     }
 
-    public boolean isCourse(String courseCode) {
-        try {
-            course = new Course(courseCode);
-            ResultSet resultSet = courseQuery.getCourse(course);
-            return resultSet.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
+    public boolean isCourse(String courseCode) throws SQLException {
+        course = new Course(courseCode);
+        ResultSet resultSet = courseQuery.getCourse(course);
+        return resultSet.next();
     }
 
     public int getCreditUnits(String courseCode) throws SQLException {
@@ -62,21 +56,26 @@ public class CourseController {
         return creditUnits;
     }
 
-    public void registerCourse() {
+    public void registerCourse() throws SQLException {
         List courseDetails = requestCourseDetails();
         String courseCode = (String) courseDetails.get(0);
         String courseTitle = (String) courseDetails.get(1);
         int courseLevel = (int) courseDetails.get(2);
         int creditUnits = (int) courseDetails.get(3);
 
-        course = new Course(courseCode, courseTitle, courseLevel, creditUnits);
-        courseQuery.addCourse(course);
+        if (isCourse(courseCode)) {
+            System.out.println("Course data already exists.");
+        } else {
+            course = new Course(courseCode, courseTitle, courseLevel, creditUnits);
+            courseQuery.addCourse(course);
+        }
     }
 
-    public void deleteCourse() {
+    public void deleteCourse() throws SQLException {
         String courseCode = requestCourseCode();
         course = new Course(courseCode);
-        if (isCourse(course.getCourseCode())) {
+
+        if (isCourse(courseCode)) {
             courseQuery.removeCourse(course);
         } else {
             System.out.println("Course data does not exist.");
