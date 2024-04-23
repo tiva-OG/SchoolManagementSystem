@@ -7,19 +7,15 @@ public class Student {
     private String lastName;
     private String email;
     private int level;
-    private int maxCreditUnits;
-    private int minCreditUnits;
     private int registeredCreditUnits;
 
 
-    public Student(String regNumber, String firstName, String lastName, String email, int level, int maxCreditUnits) {
+    public Student(String regNumber, String firstName, String lastName, String email, int level) {
         this.regNumber = regNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.level = level;
-        this.maxCreditUnits = maxCreditUnits;
-        this.minCreditUnits = 28;
         this.registeredCreditUnits = 0;
     }
 
@@ -51,28 +47,12 @@ public class Student {
         return regNumber;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public int getLevel() {
         return level;
-    }
-
-    public int getMaxCreditUnits() {
-        return maxCreditUnits;
-    }
-
-    public int getMinCreditUnits() {
-        return minCreditUnits;
     }
 
     public int getRegisteredCreditUnits() {

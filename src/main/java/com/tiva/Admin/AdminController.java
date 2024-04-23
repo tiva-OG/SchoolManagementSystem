@@ -24,14 +24,6 @@ public class AdminController {
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
     }
-    /*
-    - register Teacher with courseInCharge
-    - register new Student
-    - register new Course
-    - delete Teacher
-    - delete Student
-    - delete Course
-     */
 
     public String getAdminUsername() {
         return admin.getUsername();
@@ -43,23 +35,19 @@ public class AdminController {
 
     public String requestUsername() {
         System.out.print("Enter admin username: ");
-        String username = scanner.next();
-
-        return username;
+        return scanner.next();
     }
 
     public String requestPassword() {
         System.out.print("Enter admin password: ");
-        String password = scanner.next();
-
-        return password;
+        return scanner.next();
     }
 
     public void displayDashboard() {
         System.out.println();
-        System.out.println("<<<<<<< >>>>>>>");
-        System.out.println("ADMIN DASHBOARD");
-        System.out.println("<<<<<<< >>>>>>>");
+        System.out.println("<<<<<<<<<<>>>>>>>>>>");
+        System.out.println("   ADMIN DASHBOARD   ");
+        System.out.println("<<<<<<<<<<>>>>>>>>>>");
         System.out.println("1. Register a New Teacher");
         System.out.println("2. Register a New Student");
         System.out.println("3. Register a New Course");

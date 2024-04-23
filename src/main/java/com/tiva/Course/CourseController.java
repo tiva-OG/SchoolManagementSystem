@@ -18,59 +18,6 @@ public class CourseController {
         this.courseQuery = new CourseQuery(connection);
     }
 
-    protected List requestCourseDetails() {
-        System.out.print("Enter the course code: ");
-        String courseCode = scanner.next();
-        System.out.print("Enter the course title: ");
-        String courseTitle = scanner.next();
-        System.out.print("Enter the course level: ");
-        int courseLevel = scanner.nextInt();
-        System.out.print("Enter the course credit-units: ");
-        int creditUnits = scanner.nextInt();
-
-        Object[] courseDetails = new Object[]{courseCode, courseTitle, courseLevel, creditUnits};
-        return List.of(courseDetails);
-    }
-
-    public String requestCourseCode() {
-        System.out.print("Enter the course code: ");
-        String courseCode = scanner.next();
-
-        return courseCode;
-    }
-
-    public boolean isCourse(String courseCode) throws SQLException {
-        course = new Course(courseCode);
-        ResultSet resultSet = courseQuery.getCourse(course);
-        return resultSet.next();
-    }
-
-    public int getCreditUnits(String courseCode) throws SQLException {
-        course = new Course(courseCode);
-        ResultSet resultSet = courseQuery.getCourse(course);
-        int creditUnits = 0;
-        while (resultSet.next()) {
-            creditUnits = resultSet.getInt("credit_units");
-        }
-
-        return creditUnits;
-    }
-
-    public void registerCourse() throws SQLException {
-        List courseDetails = requestCourseDetails();
-        String courseCode = (String) courseDetails.get(0);
-        String courseTitle = (String) courseDetails.get(1);
-        int courseLevel = (int) courseDetails.get(2);
-        int creditUnits = (int) courseDetails.get(3);
-
-        if (isCourse(courseCode)) {
-            System.out.println("Course data already exists.");
-        } else {
-            course = new Course(courseCode, courseTitle, courseLevel, creditUnits);
-            courseQuery.addCourse(course);
-        }
-    }
-
     public void deleteCourse() throws SQLException {
         String courseCode = requestCourseCode();
         course = new Course(courseCode);
@@ -99,4 +46,57 @@ public class CourseController {
             System.out.println();
         }
     }
+
+    public int getCreditUnits(String courseCode) throws SQLException {
+        course = new Course(courseCode);
+        ResultSet resultSet = courseQuery.getCourse(course);
+        int creditUnits = 0;
+        while (resultSet.next()) {
+            creditUnits = resultSet.getInt("credit_units");
+        }
+
+        return creditUnits;
+    }
+
+    public boolean isCourse(String courseCode) throws SQLException {
+        course = new Course(courseCode);
+        ResultSet resultSet = courseQuery.getCourse(course);
+        return resultSet.next();
+    }
+
+    public void registerCourse() throws SQLException {
+        List courseDetails = requestCourseDetails();
+        String courseCode = (String) courseDetails.get(0);
+        String courseTitle = (String) courseDetails.get(1);
+        int courseLevel = (int) courseDetails.get(2);
+        int creditUnits = (int) courseDetails.get(3);
+
+        if (isCourse(courseCode)) {
+            System.out.println("Course data already exists.");
+        } else {
+            course = new Course(courseCode, courseTitle, courseLevel, creditUnits);
+            courseQuery.addCourse(course);
+        }
+    }
+
+    public String requestCourseCode() {
+        System.out.print("Enter the course code: ");
+        return scanner.next();
+    }
+
+    protected List requestCourseDetails() {
+        System.out.print("Enter the course code: ");
+        String courseCode = scanner.next();
+        System.out.print("Enter the course title: ");
+        String courseTitle = scanner.next();
+        System.out.print("Enter the course level: ");
+        int courseLevel = scanner.nextInt();
+        System.out.print("Enter the course credit-units: ");
+        int creditUnits = scanner.nextInt();
+
+        Object[] courseDetails = new Object[]{courseCode, courseTitle, courseLevel, creditUnits};
+        return List.of(courseDetails);
+    }
+
+
 }

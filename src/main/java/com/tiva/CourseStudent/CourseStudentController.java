@@ -29,39 +29,30 @@ public class CourseStudentController {
         this.student = studentController.getStudent();
     }
 
-    public void unregisterForCourse(Student student) throws SQLException {
-        // also consider checking if student has already registered for the course
-        String courseCode = courseController.requestCourseCode();
-        if (courseController.isCourse(courseCode)) {
-            course = new Course(courseCode);
-            courseStudentQuery.unregisterForCourse(student, course);
-        } else {
-            System.out.println("Course data does not exist.");
-        }
-    }
-
-    public void registerForCourse(String courseCode) throws SQLException {
+    public void displayStudentsOfferingCourse(String courseCode) throws SQLException {
         // String courseCode = courseController.requestCourseCode();
+        course = new Course(courseCode);
+        ResultSet resultSet = courseStudentQuery.getStudentsOfferingCourse(course);
 
-        int maxCreditUnits = studentController.getMaxCreditUnits();
-        int registeredCreditUnits = getRegisteredCreditUnits();
-        int creditUnits = courseController.getCreditUnits(courseCode);
+        System.out.println();
+        System.out.println("+------------------------------------+");
+        System.out.printf("| %-34s |\n", courseCode);
+        System.out.println("+------------++----------------------+");
+        System.out.println("| ID         || NAME                 |");
+        System.out.println("+------------++----------------------+");
 
-        if ((registeredCreditUnits + creditUnits) > maxCreditUnits) {
-            System.out.println("Cannot exceed maximum credit-units allowed.");
-            return;
+        int totalStudents = 0;
+        while (resultSet.next()) {
+            String regNumber = resultSet.getString("reg_number");
+            String fullName = resultSet.getString("full_name");
+            totalStudents += 1;
+
+            System.out.printf("| %-10s || %-20s |\n", regNumber, fullName);
+            System.out.println("+------------++----------------------+");
         }
-
-        if (courseController.isCourse(courseCode)) {
-            course = new Course(courseCode);
-            courseStudentQuery.registerForCourse(student, course);
-            System.out.println("Current registered credit-units: " + registeredCreditUnits);
-            System.out.println("Course credit-units: " + creditUnits);
-            System.out.println("New registered credit-units: " + (registeredCreditUnits+creditUnits));
-            studentController.updateRegisteredCreditUnits(registeredCreditUnits + creditUnits);
-        } else if (!courseCode.equals("q")) {
-            System.out.println("Course data does not exist.");
-        }
+        System.out.printf("| Total No. of Students      ||  %-3s |\n", totalStudents);
+        System.out.println("+------------++----------------------+");
+        System.out.println();
     }
 
     public void displayRegisteredCourses() throws SQLException {
@@ -105,32 +96,6 @@ public class CourseStudentController {
         System.out.println();
     }
 
-    public void displayStudentsOfferingCourse(String courseCode) throws SQLException {
-        // String courseCode = courseController.requestCourseCode();
-        course = new Course(courseCode);
-        ResultSet resultSet = courseStudentQuery.getStudentsOfferingCourse(course);
-
-        System.out.println();
-        System.out.println("+------------------------------------+");
-        System.out.printf("| %-34s |\n", courseCode);
-        System.out.println("+------------++----------------------+");
-        System.out.println("| ID         || NAME                 |");
-        System.out.println("+------------++----------------------+");
-
-        int totalStudents = 0;
-        while (resultSet.next()) {
-            String regNumber = resultSet.getString("reg_number");
-            String fullName = resultSet.getString("full_name");
-            totalStudents += 1;
-
-            System.out.printf("| %-10s || %-20s |\n", regNumber, fullName);
-            System.out.println("+------------++----------------------+");
-        }
-        System.out.printf("| Total No. of Students      ||  %-3s |\n", totalStudents);
-        System.out.println("+------------++----------------------+");
-        System.out.println();
-    }
-
     public int getRegisteredCreditUnits() throws SQLException {
         ResultSet resultSet = courseStudentQuery.getCoursesRegisteredByStudent(student);
         int registeredCreditUnits = 0;
@@ -142,7 +107,43 @@ public class CourseStudentController {
         return registeredCreditUnits;
     }
 
+    public void registerForCourse(String courseCode) throws SQLException {
+        // String courseCode = courseController.requestCourseCode();
+
+        int maxCreditUnits = studentController.getMaxCreditUnits();
+        int registeredCreditUnits = getRegisteredCreditUnits();
+        int creditUnits = courseController.getCreditUnits(courseCode);
+
+        if ((registeredCreditUnits + creditUnits) > maxCreditUnits) {
+            System.out.println("Cannot exceed maximum credit-units allowed.");
+            return;
+        }
+
+        if (courseController.isCourse(courseCode)) {
+            course = new Course(courseCode);
+            courseStudentQuery.registerForCourse(student, course);
+            System.out.println("Current registered credit-units: " + registeredCreditUnits);
+            System.out.println("Course credit-units: " + creditUnits);
+            System.out.println("New registered credit-units: " + (registeredCreditUnits+creditUnits));
+            studentController.updateRegisteredCreditUnits(registeredCreditUnits + creditUnits);
+        } else if (!courseCode.equals("q")) {
+            System.out.println("Course data does not exist.");
+        }
+    }
+
     public String requestCourseCode() {
         return courseController.requestCourseCode();
     }
+
+    public void unregisterForCourse(Student student) throws SQLException {
+        // also consider checking if student has already registered for the course
+        String courseCode = courseController.requestCourseCode();
+        if (courseController.isCourse(courseCode)) {
+            course = new Course(courseCode);
+            courseStudentQuery.unregisterForCourse(student, course);
+        } else {
+            System.out.println("Course data does not exist.");
+        }
+    }
+
 }

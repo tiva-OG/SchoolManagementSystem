@@ -23,22 +23,7 @@ public class CourseStudentQuery {
     }
 
     /**
-     * responsible for obtaining students offering a certain course
-     * @param course being queried
-     */
-    public ResultSet getStudentsOfferingCourse(Course course) throws SQLException {
-        String query = "SELECT s.reg_number, s.full_name FROM %s cs JOIN " +
-                "%s s ON cs.reg_number=s.reg_number WHERE cs.course_code=? " +
-                "ORDER BY cs.reg_number;";
-        query = String.format(query, associationTableName, studentsTableName);
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, course.getCourseCode());
-        return preparedStatement.executeQuery();
-    }
-
-    /**
-     * responsible for obtaining courses registered by student
-     * @param student being queried
+     * for obtaining courses that has been registered by student
      */
     public ResultSet getCoursesRegisteredByStudent(Student student) throws SQLException {
         String query = "SELECT c.code, c.title, c.credit_units FROM %s cs JOIN " +
@@ -51,9 +36,8 @@ public class CourseStudentQuery {
     }
 
     /**
-     * responsible for obtaining courses not yet registered by student
+     * for obtaining courses not yet registered by student
      * this includes courses from lower levels in case of carry-overs
-     * @param student being queried
      */
     public ResultSet getCoursesUnregisteredByStudent(Student student) throws SQLException {
         String query = "SELECT * FROM %s c WHERE c.level<=? AND c.code NOT IN " +
@@ -66,6 +50,22 @@ public class CourseStudentQuery {
         return preparedStatement.executeQuery();
     }
 
+    /**
+     * for obtaining details students offering a certain course
+     */
+    public ResultSet getStudentsOfferingCourse(Course course) throws SQLException {
+        String query = "SELECT s.reg_number, s.full_name FROM %s cs JOIN " +
+                "%s s ON cs.reg_number=s.reg_number WHERE cs.course_code=? " +
+                "ORDER BY cs.reg_number;";
+        query = String.format(query, associationTableName, studentsTableName);
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, course.getCourseCode());
+        return preparedStatement.executeQuery();
+    }
+
+    /**
+     * for adding courses into student's list of registered courses
+     */
     public void registerForCourse(Student student, Course course) throws SQLException {
         String query = "INSERT INTO %s(course_code, reg_number) VALUES (upper(?), ?);";
         query = String.format(query, associationTableName);
@@ -80,6 +80,9 @@ public class CourseStudentQuery {
         }
     }
 
+    /**
+     * for removing registered courses from student's list of registered courses
+     */
     public void unregisterForCourse(Student student, Course course) throws SQLException {
         String query = "DELETE FROM %s WHERE course_code=upper(?) AND reg_number=?";
         query = String.format(query, associationTableName);

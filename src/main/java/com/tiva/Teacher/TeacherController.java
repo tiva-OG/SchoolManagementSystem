@@ -11,10 +11,8 @@ import java.util.Scanner;
 
 public class TeacherController {
     private final Scanner scanner;
-
     private Teacher teacher;
     private final TeacherQuery teacherQuery;
-
 
     public TeacherController(Connection connection) {
         this.teacherQuery = new TeacherQuery(connection);
@@ -23,99 +21,38 @@ public class TeacherController {
     }
 
     public TeacherController(Connection connection, String regNumber) {
-        this.scanner = new Scanner(System.in);
-        this.scanner.useDelimiter("\n");
         this.teacherQuery = new TeacherQuery(connection);
         this.teacher = new Teacher(regNumber);
+        this.scanner = new Scanner(System.in);
+        this.scanner.useDelimiter("\n");
     }
 
-    protected List extractNames(String fullName) {
-        String[] names = fullName.split(" ");
-        return List.of(names);
+    public void changeCourseInCharge() throws SQLException {
+        System.out.print("Enter new course-code for teacher: ");
+        String newCourseInCharge = scanner.next();
+
+        teacher.setCourseInCharge(newCourseInCharge);
+        teacherQuery.updateCourseInCharge(teacher);
     }
 
-    protected String generateRegNumber() {
-        Random random = new Random();
-        String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String regNumber = abc.charAt(random.nextInt(abc.length())) + random.nextInt(0, 9) + "/S" + random.nextInt(11, 99);
+    public void changeEmail() throws SQLException {
+        // is a function requestNewEmail necessary?
+        System.out.print("Enter new email: ");
+        String newEmail = scanner.next();
 
-        return regNumber;
-    }
-
-    protected String requestRegNumber() {
-        System.out.print("Enter teacher's registration-number: ");
-        String regNumber = scanner.next();
-
-        return regNumber;
-    }
-
-
-    protected List requestTeacherDetails() {
-
-        String regNumber = generateRegNumber();
-        System.out.print("Enter teacher's first-name: ");
-        String firstName = scanner.next();
-        System.out.print("Enter teacher's last-name: ");
-        String lastName = scanner.next();
-        System.out.print("Enter teacher's email: ");
-        String email = scanner.next();
-        System.out.print("Enter teacher's course-in-charge:");
-        String courseInCharge = scanner.next();
-
-        Object[] teacherDetails = new Object[]{regNumber, firstName, lastName, email, courseInCharge};
-        return List.of(teacherDetails);
-    }
-
-    protected boolean isTeacher(String regNumber) throws SQLException {
-        teacher = new Teacher(regNumber);
-        ResultSet resultSet = teacherQuery.getTeacher(teacher);
-        return resultSet.next();
-    }
-
-    public boolean isTeacher() throws SQLException {
-        ResultSet resultSet = teacherQuery.getTeacher(teacher);
-        return resultSet.next();
-    }
-
-    public void registerTeacher() throws SQLException {
-        List teacherDetails = requestTeacherDetails();
-        String regNumber = (String) teacherDetails.get(0);
-        String firstName = (String) teacherDetails.get(1);
-        String lastName = (String) teacherDetails.get(2);
-        String email = (String) teacherDetails.get(3);
-        String courseInCharge = (String) teacherDetails.get(4);
-
-        if (isTeacher(regNumber)) {
-            System.out.println("Teacher data already exists.");
-        } else {
-            teacher = new Teacher(regNumber, firstName, lastName, email, courseInCharge);
-            System.out.println(teacher.toString());
-            teacherQuery.addTeacher(teacher);
-        }
+        teacher.setEmail(newEmail);
+        teacherQuery.updateEmail(teacher);
     }
 
     public void deleteTeacher() throws SQLException {
-        String regNumber = requestRegNumber();
+        System.out.print("Enter teacher's registration-number: ");
+        String regNumber = scanner.next();
         teacher = new Teacher(regNumber);
 
         if (isTeacher(regNumber)) {
             teacherQuery.removeTeacher(teacher);
         } else {
             System.out.println("Teacher data does not exist.");
-        }
-    }
-
-    public void loadTeacherDetails() throws SQLException {
-        ResultSet resultSet = teacherQuery.getTeacher(teacher);
-        while (resultSet.next()) {
-            String fullName = resultSet.getString("full_name");
-            String email = resultSet.getString("email");
-            String courseInCharge = resultSet.getString("course_in_charge");
-
-            List names = extractNames(fullName);
-            String firstName = (String) names.get(0);
-            String lastName = (String) names.get(1);
-            teacher.setParams(firstName, lastName, email, courseInCharge);
         }
     }
 
@@ -161,24 +98,78 @@ public class TeacherController {
 
     }
 
-    public void changeEmail() throws SQLException {
-        // is a function requestNewEmail necessary?
-        System.out.print("Enter new email: ");
-        String newEmail = scanner.next();
-
-        teacher.setEmail(newEmail);
-        teacherQuery.updateEmail(teacher);
+    protected List extractNames(String fullName) {
+        String[] names = fullName.split(" ");
+        return List.of(names);
     }
 
-    public void changeCourseInCharge() throws SQLException {
-        System.out.print("Enter new course-code for teacher: ");
-        String newCourseInCharge = scanner.next();
+    protected String generateRegNumber() {
+        Random random = new Random();
+        String abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String regNumber = abc.charAt(random.nextInt(abc.length())) + random.nextInt(0, 9) + "/S" + random.nextInt(11, 99);
 
-        teacher.setCourseInCharge(newCourseInCharge);
-        teacherQuery.updateCourseInCharge(teacher);
+        return regNumber;
     }
 
     public String getCourseInCharge() {
         return teacher.getCourseInCharge();
+    }
+
+    public void loadTeacherDetails() throws SQLException {
+        ResultSet resultSet = teacherQuery.getTeacher(teacher);
+        while (resultSet.next()) {
+            String fullName = resultSet.getString("full_name");
+            String email = resultSet.getString("email");
+            String courseInCharge = resultSet.getString("course_in_charge");
+
+            List names = extractNames(fullName);
+            String firstName = (String) names.get(0);
+            String lastName = (String) names.get(1);
+            teacher.setParams(firstName, lastName, email, courseInCharge);
+        }
+    }
+
+    protected boolean isTeacher(String regNumber) throws SQLException {
+        teacher = new Teacher(regNumber);
+        ResultSet resultSet = teacherQuery.getTeacher(teacher);
+        return resultSet.next();
+    }
+
+    public boolean isTeacher() throws SQLException {
+        ResultSet resultSet = teacherQuery.getTeacher(teacher);
+        return resultSet.next();
+    }
+
+    public void registerTeacher() throws SQLException {
+        List teacherDetails = requestTeacherDetails();
+        String regNumber = (String) teacherDetails.get(0);
+        String firstName = (String) teacherDetails.get(1);
+        String lastName = (String) teacherDetails.get(2);
+        String email = (String) teacherDetails.get(3);
+        String courseInCharge = (String) teacherDetails.get(4);
+
+        if (isTeacher(regNumber)) {
+            System.out.println("Teacher data already exists.");
+        } else {
+            teacher = new Teacher(regNumber, firstName, lastName, email, courseInCharge);
+            System.out.println(teacher.toString());
+            teacherQuery.addTeacher(teacher);
+        }
+    }
+
+    protected List requestTeacherDetails() {
+
+        String regNumber = generateRegNumber();
+        System.out.print("Enter teacher's first-name: ");
+        String firstName = scanner.next();
+        System.out.print("Enter teacher's last-name: ");
+        String lastName = scanner.next();
+        System.out.print("Enter teacher's email: ");
+        String email = scanner.next();
+        System.out.print("Enter teacher's course-in-charge:");
+        String courseInCharge = scanner.next();
+
+        Object[] teacherDetails = new Object[]{regNumber, firstName, lastName, email, courseInCharge};
+        return List.of(teacherDetails);
     }
 }

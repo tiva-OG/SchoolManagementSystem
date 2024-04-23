@@ -98,10 +98,7 @@ public class SchoolController {
                 int choice = scanner.nextInt();
 
                 switch (choice) {
-                    case 1 -> {
-                        // display student's profile
-                        studentController.displayProfile();
-                    }
+                    case 1 -> studentController.displayProfile();
                     case 2 -> {
                         // edit student profile
                         boolean keepEditing = true;
@@ -120,10 +117,7 @@ public class SchoolController {
                             }
                         }
                     }
-                    case 3 -> {
-                        // display courses registered by student
-                        courseStudentController.displayRegisteredCourses();
-                    }
+                    case 3 -> courseStudentController.displayRegisteredCourses();
                     case 4 -> {
                         // student register for new course
                         String courseCode;
@@ -133,16 +127,11 @@ public class SchoolController {
                             courseStudentController.registerForCourse(courseCode);
                         } while (!courseCode.equals("q"));
                     }
-                    case 5 -> {
-                        // exit the system
-                        stayLoggedIn = false;
-                    }
+                    case 5 -> stayLoggedIn = false;
                     default -> System.out.println("Please enter a valid choice.");
                 }
             }
-        } else {
-            System.out.println("Student does not exist.");
-        }
+        } else System.out.println("Student does not exist.");
     }
 
     private void openTeacherPortal(TeacherController teacherController) throws SQLException {
@@ -161,10 +150,7 @@ public class SchoolController {
                 int choice = scanner.nextInt();
 
                 switch (choice) {
-                    case 1 -> {
-                        // display teacher's profile
-                        teacherController.displayProfile();
-                    }
+                    case 1 -> teacherController.displayProfile();
                     case 2 -> {
                         // edit teacher profile
                         boolean keepEditing = true;
@@ -182,24 +168,14 @@ public class SchoolController {
                             }
                         }
                     }
-                    case 3 -> {
-                        // display details of course teacher's in-charge
-                        courseController.displayCourse(teacherController.getCourseInCharge());
-                    }
-                    case 4 -> {
-                        // display students of course teacher's in-charge
-                        courseStudentController.displayStudentsOfferingCourse(teacherController.getCourseInCharge());
-                    }
-                    case 5 -> {
-                        // exit the system
-                        stayLoggedIn = false;
-                    }
+                    case 3 -> courseController.displayCourse(teacherController.getCourseInCharge());
+                    case 4 ->
+                            courseStudentController.displayStudentsOfferingCourse(teacherController.getCourseInCharge());
+                    case 5 -> stayLoggedIn = false;
                     default -> System.out.println("Please enter a valid choice.");
                 }
             }
-        } else {
-            System.out.println("Teacher does not exist.");
-        }
+        } else System.out.println("Teacher does not exist.");
     }
 
     private UserType getUserType(String regNumber) {
@@ -209,18 +185,17 @@ public class SchoolController {
 
         return Pattern.matches(studentRegex, regNumber) ? UserType.STUDENT
                 : Pattern.matches(teacherRegex, regNumber) ? UserType.TEACHER
-                : null;
+                : UserType.INVALID;
     }
 
     private String requestUserRegNumber() {
         System.out.print("Enter registration-number: ");
-        String regNumber = scanner.next();
-        return regNumber;
+        return scanner.next();
     }
 }
 
 enum UserType {
-    ADMIN,
     STUDENT,
-    TEACHER
+    TEACHER,
+    INVALID
 }
